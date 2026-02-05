@@ -32,8 +32,7 @@ class LiipMonitorExtension extends Extension implements CompilerPassInterface
      */
     public function load(array $configs, ContainerBuilder $container): void
     {
-        $locator = new FileLocator(__DIR__.'/../Resources/config');
-        $loader = new Loader\PhpFileLoader($container, $locator);
+        $loader = new Loader\PhpFileLoader($container, new FileLocator(__DIR__.'/../Resources/config'));
         $loader->load('runner.php');
         $loader->load('helper.php');
         $loader->load('commands.php');
