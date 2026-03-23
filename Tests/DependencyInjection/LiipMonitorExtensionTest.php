@@ -43,8 +43,6 @@ use Symfony\Component\Messenger\Transport\Receiver\MessageCountAwareInterface;
 
 /**
  * @author Kevin Bond <kevinbond@gmail.com>
- *
- * @group symfony8-incompatible
  */
 class LiipMonitorExtensionTest extends AbstractExtensionTestCase
 {
