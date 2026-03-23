@@ -8,9 +8,6 @@ use Symfony\Bundle\TwigBundle\TwigBundle;
 use Symfony\Component\Config\Loader\LoaderInterface;
 use Symfony\Component\HttpKernel\Kernel;
 
-/**
- * Class AppKernel.
- */
 class AppKernel extends Kernel
 {
     public function registerBundles(): array
@@ -24,7 +21,7 @@ class AppKernel extends Kernel
 
     public function registerContainerConfiguration(LoaderInterface $loader): void
     {
-        $loader->load(__DIR__.'/config_'.$this->environment.'.yml');
+        $loader->load(__DIR__.'/config.yml');
     }
 
     public function getProjectDir(): string
