@@ -3,13 +3,12 @@
 namespace Liip\MonitorBundle\Tests\Helper;
 
 use Liip\MonitorBundle\Helper\RunnerManager;
+use PHPUnit\Framework\MockObject\MockObject;
+use Symfony\Component\DependencyInjection\Container;
 
 class RunnerManagerTest extends \PHPUnit\Framework\TestCase
 {
-    /**
-     * @var \PHPUnit_Framework_MockObject_MockObject
-     */
-    private $container;
+    private Container|MockObject $container;
 
     /**
      * @var RunnerManager
@@ -82,17 +81,22 @@ class RunnerManagerTest extends \PHPUnit\Framework\TestCase
         $runner1 = $runnerMockBuilder->getMock();
         $runner2 = $runnerMockBuilder->getMock();
         $this->container
-            ->expects($this->exactly(2))
+            ->expects($invokedCount = $this->exactly(2))
             ->method('get')
-            ->withConsecutive(
-                ['liip_monitor.runner_group_1'],
-                ['liip_monitor.runner_group_2']
-            )
-            ->willReturnOnConsecutiveCalls($runner1, $runner2);
+            ->willReturnCallback(function ($parameter) use ($invokedCount, $runner1, $runner2) {
+                if (1 === $invokedCount->numberOfInvocations()) {
+                    $this->assertSame('liip_monitor.runner_group_1', $parameter);
+
+                    return $runner1;
+                }
+                $this->assertSame('liip_monitor.runner_group_2', $parameter);
+
+                return $runner2;
+            })
+        ;
 
         $result = $this->runnerManager->getRunners();
 
-        $this->assertTrue(is_array($result));
         $this->assertCount(2, $result);
         $this->assertArrayHasKey('group_1', $result);
         $this->assertArrayHasKey('group_2', $result);
@@ -110,7 +114,6 @@ class RunnerManagerTest extends \PHPUnit\Framework\TestCase
 
         $result = $this->runnerManager->getGroups();
 
-        $this->assertTrue(is_array($result));
         $this->assertCount(2, $result);
         $this->assertContains('group_1', $result);
         $this->assertContains('group_2', $result);

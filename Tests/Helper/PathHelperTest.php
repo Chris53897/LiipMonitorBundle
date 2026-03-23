@@ -3,14 +3,12 @@
 namespace Liip\MonitorBundle\Tests\Helper;
 
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
-use Symfony\Component\HttpKernel\Kernel;
 
 class PathHelperTest extends WebTestCase
 {
     public function testGenerateRoutes(): void
     {
-        $environment = 'symfony'.Kernel::MAJOR_VERSION;
-        $client = static::createClient(['environment' => $environment]);
+        $client = static::createClient();
 
         $container = $client->getKernel()->getContainer();
 

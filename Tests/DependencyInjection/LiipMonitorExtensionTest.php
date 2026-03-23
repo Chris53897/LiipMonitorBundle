@@ -83,6 +83,10 @@ class LiipMonitorExtensionTest extends AbstractExtensionTestCase
             $this->setExpectedException('InvalidArgumentException');
         }
 
+        if ('security_advisory' === $name && !class_exists('Enlightn\SecurityChecker\AdvisoryAnalyzer')) {
+            $this->markTestSkipped('enlightn/security-checker is not installed (optional dependency).');
+        }
+
         if (!$checkAlias) {
             $checkAlias = $name;
         }

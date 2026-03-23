@@ -35,14 +35,9 @@ final class RedisCollectionTest extends TestCase
 
     private function assertAuthPropertyValue(Redis $check, string $auth): void
     {
-        try {
-            $refClass = new \ReflectionClass($check);
-            $authProp = $refClass->getProperty('auth');
-            $authProp->setAccessible(true);
-            self::assertSame($auth, $authProp->getValue($check));
-        } catch (\ReflectionException $e) {
-            self::fail($e->getMessage());
-        }
+        $refClass = new \ReflectionClass($check);
+        $authProp = $refClass->getProperty('auth');
+        self::assertSame($auth, $authProp->getValue($check));
     }
 
     public function provideDsnWithAut(): array

@@ -2,6 +2,7 @@ name: CI
 
 on:
   push:
+    branches: ['*.x']
   pull_request:
   schedule:
     - cron: '0 0 1,16 * *'
@@ -15,9 +16,9 @@ jobs:
     strategy:
       fail-fast: true
       matrix:
-        php: [ 8.1, 8.2, 8.3, 8.4 ]
+        php: [ 8.1, 8.2, 8.3, 8.4, 8.5 ]
         deps: [ highest ]
-        symfony: [ 6.4.*, 7.2.*, 7.3.* ]
+        symfony: [ 6.4.*, 7.2.*, 7.3.*, 8.0.* ]
         include:
           - php: 8.1
             deps: lowest
@@ -27,10 +28,19 @@ jobs:
             symfony: 7.2.*
           - php: 8.1
             symfony: 7.3.*
+          - php: 8.1
+            symfony: 8.0.*
+          - php: 8.2
+            symfony: 8.0.*
+          - php: 8.3
+            symfony: 8.0.*
+          # PHP 8.5: laminas-diagnostics 1.28+ conflicts with symfony/process < 7.4 (Symfony 6.4)
+          - php: 8.5
+            symfony: 6.4.*
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
@@ -40,22 +50,19 @@ jobs:
           tools: flex
 
       - name: Install dependencies
-        uses: ramsey/composer-install@v2
-        with:
-          dependency-versions: ${{ inputs.deps }}
-          composer-options: --prefer-dist
+        run: composer update --prefer-dist
         env:
           SYMFONY_REQUIRE: ${{ matrix.symfony }}
 
       - name: Run tests
-        run: vendor/bin/phpunit -v
+        run: vendor/bin/phpunit
 
   code-coverage:
     name: Code Coverage
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
@@ -64,19 +71,19 @@ jobs:
           coverage: xdebug
 
       - name: Install dependencies
-        uses: ramsey/composer-install@v2
-        with:
-          composer-options: --prefer-dist
+        run: composer update --prefer-dist
+        env:
+          SYMFONY_REQUIRE: ${{ matrix.symfony }}
 
       - name: Run code coverage
-        run: vendor/bin/phpunit -v --coverage-text
+        run: vendor/bin/phpunit --coverage-text
 
   composer-validate:
     name: Validate composer.json
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
@@ -92,7 +99,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
@@ -101,9 +108,9 @@ jobs:
           coverage: none
 
       - name: Install dependencies
-        uses: ramsey/composer-install@v2
-        with:
-          composer-options: --prefer-dist
+        run: composer update --prefer-dist
+        env:
+          SYMFONY_REQUIRE: ${{ matrix.symfony }}
 
       - name: Check CS
         run: vendor/bin/php-cs-fixer fix --diff --dry-run --verbose
