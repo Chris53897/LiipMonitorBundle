@@ -49,6 +49,10 @@ jobs:
           coverage: none
           tools: flex
 
+      - name: Remove enlightn/security-checker as it does not support Symfony 8
+        if:  ${{ matrix.symfony == '8.0.*' || matrix.php == '8.5' }}
+        run: composer remove --dev enlightn/security-checker --no-update
+
       - name: Install dependencies
         run: composer update --prefer-dist
         env:
