@@ -1,5 +1,3 @@
-## Upgrade to next version (Symfony 8 / XML deprecation)
-
 ## 2.25.0
 
 * Support Symfony 8 and PHP 8.5.
